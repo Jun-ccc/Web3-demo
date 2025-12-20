@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { useWallet } from './hooks/useWallet';
+import { useBalance } from './hooks/useBalance';
+import { useTokens } from './hooks/useTokens';
+import { ConnectButton } from './components/ConnectButton';
+import { WalletInfo } from './components/WalletInfo';
+import { BalanceCards } from './components/BalanceCard';
+import { TokenList} from './components/TokenList';
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+export default function App() {
+  const { provider, address, network, connectWallet } = useWallet();
+  const balance = useBalance(provider,address);
+  const {tokens, loading} = useTokens(provider,address);
+
+  return(
+    <div className='min-h-screen p-6'>
+      <div className='max-w-3xl mx-auto'>
+        <header className='flex items-center justify-between mb-6'>
+          <h1 className='text-2xl font-bold'>Web3 Wallet Deshboard</h1>
+          <ConnectButton connect={connectWallet} address={address}/>
+        </header>
+
+        <main className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <div className='md:col-span-2 space-y-4'>
+            <WalletInfo address={address} network={network}/>
+            <BalanceCards balance={balance}/>
+          </div>
+
+          <div>
+            <TokenList tokens={tokens} loading={loading}/>
+          </div>
+        </main>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
-
-export default App

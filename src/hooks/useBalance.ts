@@ -13,6 +13,8 @@ export function useBalance(provider: BrowserProvider | null, address: string | n
         let cancelled = false;
 
         async function fetchBalance() {
+            if (!provider || !address) return;
+
             try {
                 const raw = await provider.getBalance(address);
                 const f = parseFloat(formatEther(raw)).toFixed(4);
